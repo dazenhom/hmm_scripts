@@ -1,0 +1,82 @@
+#!/bin/bash
+#
+# Normal MSDHMM training
+#
+
+function repstr() {
+
+sed -i s/@@SPKR@@/$spkr/g           $1
+sed -i s/@@MGCMDL@@/$MGCMDL/g       $1
+sed -i s/@@LF0MDL@@/$LF0MDL/g       $1
+sed -i s/@@BAPMDL@@/$BAPMDL/g       $1
+sed -i s/@@DURMDL@@/$DURMDL/g       $1
+sed -i s/@@MGCORDER@@/$mgcordr/g    $1
+sed -i s/@@LF0ORDER@@/$lf0ordr/g    $1
+sed -i s/@@BAPORDER@@/$bapordr/g    $1
+sed -i s/@@DURSTRCLS@@/$durstrcls/g $1
+#sed -i s/@@DATASET@@/$data_set/g    $1
+sed -i s/@@NTRN_SPKR@@/$ntrn_spkr/g $1
+
+}
+
+
+#data_set=chn_170714
+mgcordr=41
+lf0ordr=1
+bapordr=26
+mgcdim=`expr 3 \* $mgcordr`
+lf0dim=`expr 3 \* $lf0ordr`
+bapdim=`expr 3 \* $bapordr`
+MGCMDL=1.0
+LF0MDL=1.0
+BAPMDL=1.0
+DURMDL=1.0
+durstrcls=0
+ntrn_spkr=5
+
+spkr=modi # Please REFER to the 'speaker name pattern' in Config.pm.adapt,
+# This slot is to indicate the name of the adaptation dataset.
+corpus=hndxjp # Replace to your corpus name
+data_dir=/mnt/lustre/sjtu/users/zhx66/experiment/hts-adapt-demo/ # Replace to your data path.
+
+# Train Adapt model
+if (( 1 )); then
+  echo "Train Adapt model";
+  for i in 1 2; do
+    cat ./Config.pm.pass$i > ./Config.adapt
+    rm data/questions/questions_qst001.hed
+    ln -sf questions_qst001.hed.cxc${i} data/questions/questions_qst001.hed
+    repstr ./Config.adapt
+    perl ./Training.pl ./Config.adapt;
+  done
+  if [ $? -ne 0 ];then
+    exit -1;
+  fi
+fi
+
+# output hts voices (1mix)
+if (( 1 )); then
+  echo "output hts voices (1mix)";
+  #cat ./Config.pm.common ./Config.pm.1mix > ./Config.1mix;
+  #repstr ./Config.1mix
+  #perl ./Training.pl ./Config.1mix;
+
+  vdir=voices.1mix
+  mkdir $vdir 2>/dev/null
+  cp voices/qst001/ver1/* $vdir/
+  rm -f $vdir/*gv*
+  if (( $durstrcls )); then
+    rm -f $vdir/tree-dur.inf.? $vdir/dur.pdf.?
+    perl convert_dur.pl voices/qst001/ver1 $vdir 5
+  else
+    perl pdf_convert1.pl voices/qst001/ver1/dur.pdf $vdir/dur.pdf 1 5 0
+  fi
+  perl pdf_convert1.pl voices/qst001/ver1/mgc.pdf $vdir/mgc.pdf 5 $mgcdim 0
+  perl pdf_convert1.pl voices/qst001/ver1/lf0.pdf $vdir/lf0.pdf 5 $lf0dim 1
+  perl pdf_convert1.pl voices/qst001/ver1/bap.pdf $vdir/bap.pdf 5 $bapdim 0
+  perl pdf_convert2.pl voices/qst001/ver1/gv-mgc.pdf $vdir/mgc_gv.pdf 1 $mgcordr 0
+  perl pdf_convert2.pl voices/qst001/ver1/gv-lf0.pdf $vdir/lf0_gv.pdf 1 $lf0ordr 0
+  cp voices/qst001/ver1/tree-gv-mgc.inf $vdir/tree-mgc_gv.inf
+  cp voices/qst001/ver1/tree-gv-lf0.inf $vdir/tree-lf0_gv.inf
+  cat QS.FixF0 voices/qst001/ver1/tree-lf0.inf > $vdir/tree-lf0.inf
+fi

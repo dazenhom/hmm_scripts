@@ -1,0 +1,39 @@
+
+# Switch ================================
+$MKEMV = 0; # preparing environments
+$HCMPV = 0; # computing a global variance
+$IN_RE = 0; # initialization & reestimation
+$MMMMF = 0; # making a monophone mmf
+$ERST0 = 0; # embedded reestimation (monophone)
+$MN2FL = 0; # copying monophone mmf to fullcontext one
+$ERST1 = 0; # embedded reestimation (fullcontext)
+$CXCL1 = 0; # tree-based context clustering
+$ERST2 = 0; # embedded reestimation (clustered)
+$UNTIE = 0; # untying the parameter sharing structure
+$ERST3 = 0; # embedded reestimation (untied)
+$CXCL2 = 0; # tree-based context clustering
+$ERST4 = 0; # embedded reestimation (re-clustered)
+$FALGN = 0; # forced alignment for no-silent GV
+$MCDGV = 0; # making global variance
+$MKUNG = 0; # making unseen models (GV)
+$TMSPF = 0; # training modulation spectrum-based postfilter
+$MKUN1 = 0; # making unseen models (1mix)
+$PGEN1 = 0; # generating speech parameter sequences (1mix)
+$WGEN1 = 0; # synthesizing waveforms (1mix)
+$CONVM = 0; # converting mmfs to the hts_engine file format
+$MHTSV = 0; # make low-pass filter and hts voice for hts_engine_api_1.10
+$ENGIN = 0; # synthesizing waveforms using hts_engine
+$SEMIT = 0; # semi-tied covariance matrices
+$MKUNS = 0; # making unseen models (stc)
+$CMSTC = 0; # converting mmfs to the hts_engine file format (stc)
+$PGENS = 0; # generating speech parameter sequences (stc)
+$WGENS = 0; # synthesizing waveforms (stc)
+$UPMIX = 1; # increasing the number of mixture components (1mix -> 2mix)
+$ERST5 = 1; # embedded reestimation (2mix)
+$MKUN2 = 0; # making unseen models (2mix)
+$CMIX2 = 1; # converting mmfs to the hts_engine file format (2mix)
+$PGEN2 = 0; # generating speech parameter sequences (2mix)
+$WGEN2 = 0; # synthesizing waveforms (2mix)
+
+
+1;
